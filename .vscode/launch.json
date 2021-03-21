@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Listen for XDebug on Homestead",
+            "type": "php",
+            "request": "launch",
+            "program": "",
+            "port": 9003,
+            "pathMappings": {
+                "/home/vagrant/latihan/ecommerce-daeng": "${workspaceFolder}"
+            }
+        }
+    ]
+}

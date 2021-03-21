@@ -2,23 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LoginController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+Route::get('/login', [LoginController::class, 'loginForm'])->name('customer.login');
+Route::post('/login', [LoginController::class, 'login'])->name('customer.post_login');
 
-Route::get('/', function () {
-    return view('welcome');
+
+
+// Auth::routes();
+//ROUTING INI MENCAKUP SEMUA ROUTING YANG BERKAITAN DENGAN AUTHENTICATION
+//JADI INI GROUPING ROUTE, SEHINGGA SEMUA ROUTE YANG ADA DIDALAMNYA
+//SECARA OTOMATIS AKAN DIAWALI DENGAN administrator
+//CONTOH: /administrator/category ATAU /administrator/product, DAN SEBAGAINYA
+Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home'); 
 });
-
-
-
-Auth::routes(); //ROUTING INI MENCAKUP SEMUA ROUTING YANG BERKAITAN DENGAN AUTHENTICATION
-Route::get('/home', [HomeController::class, 'index'])->name('home'); //SEDANGKAN ROUTING INI UNTUK MENG-HANDLE HALAMAN SETELAH LOGIN
