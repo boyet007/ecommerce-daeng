@@ -89,9 +89,9 @@ class CategoryController extends Controller
         //ADAPUN withCount() SERUPA DENGAN EAGER LOADING YANG MENGGUNAKAN with()
         //HANYA SAJA withCount() RETURNNYA ADALAH INTEGER
         //JADI NNTI HASIL QUERYNYA AKAN MENAMBAHKAN FIELD BARU BERNAMA child_count YANG BERISI JUMLAH DATA ANAK KATEGORI
-        $category = Category::withCount(['child'])->find($id);
+        $category = Category::withCount(['child', 'product'])->find($id);
         //JIKA KATEGORI INI TIDAK DIGUNAKAN SEBAGAI PARENT ATAU CHILDNYA = 0
-        if ($category->child_count == 0) {
+        if ($category->child_count == 0 && $category->product_count == 0) {
             //MAKA HAPUS KATEGORI INI
             $category->delete();
             //DAN REDIRECT KEMBALI KE HALAMAN LIST KATEGORI
