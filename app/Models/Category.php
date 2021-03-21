@@ -38,4 +38,10 @@ class Category extends Model
     {
         return ucfirst($value);
     }
+
+    public function child()
+    {
+        //MENGGUNAKAN RELASI ONE TO MANY DENGAN FOREIGN KEY parent_id
+        return $this->hasMany(Category::class, 'parent_id');
+    }
 }
