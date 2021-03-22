@@ -4,7 +4,7 @@
     </button>
     <a class="navbar-brand" href="#">
         <img class="navbar-brand-full" src="https://daengweb.id/front/dw-theme/images/logo-head.png" width="89" height="25" alt="DW Ecommerce">
-        <img class="navbar-brand-minimized" src="{{ asset('assets/dw-01/img/brand/sygnet.svg') }}" width="30" height="30" alt="CoreUI Logo">
+        <img class="navbar-brand-minimized" src="{{ asset('assets/img/brand/sygnet.svg') }}" width="30" height="30" alt="CoreUI Logo">
     </a>
     <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
         <span class="navbar-toggler-icon"></span>
