@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-    <title>List Product</title>
+<title>List Product</title>
 @endsection
 
 @section('content')
@@ -18,19 +18,22 @@
                         <div class="card-header">
                             <h4 class="card-title">
                                 List Product
-                              
                                 <!-- BUAT TOMBOL UNTUK MENGARAHKAN KE HALAMAN ADD PRODUK -->
-                                <a href="{{ route('product.create') }}" class="btn btn-primary btn-sm float-right">Tambah</a>
+                                <div class="float-right">
+                                    <a href="{{ route('product.bulk') }}" class="btn btn-danger btn-sm">Mass Upload</a>
+                                    <a href="{{ route('product.create') }}" class="btn btn-primary btn-sm">Tambah</a>
+                                </div>
+
                             </h4>
                         </div>
                         <div class="card-body">
                             <!-- JIKA TERDAPAT FLASH SESSION, MAKA TAMPILAKAN -->
                             @if (session('success'))
-                                <div class="alert alert-success">{{ session('success') }}</div>
+                            <div class="alert alert-success">{{ session('success') }}</div>
                             @endif
 
                             @if (session('error'))
-                                <div class="alert alert-danger">{{ session('error') }}</div>
+                            <div class="alert alert-danger">{{ session('error') }}</div>
                             @endif
                             <!-- JIKA TERDAPAT FLASH SESSION, MAKA TAMPILAKAN -->
 
@@ -44,7 +47,7 @@
                                     </div>
                                 </div>
                             </form>
-                          
+
                             <!-- TABLE UNTUK MENAMPILKAN DATA PRODUK -->
                             <div class="table-responsive">
                                 <table class="table table-hover table-bordered">
@@ -75,7 +78,7 @@
                                             </td>
                                             <td>Rp {{ number_format($row->price) }}</td>
                                             <td>{{ $row->created_at->format('d-m-Y') }}</td>
-                                            
+
                                             <!-- KARENA BERISI HTML MAKA KITA GUNAKAN { !! UNTUK MENCETAK DATA -->
                                             <td>{!! $row->status_label !!}</td>
                                             <td>
@@ -83,7 +86,7 @@
                                                 <form action="{{ route('product.destroy', $row->id) }}" method="post">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <a href="{{ route('category.edit', $row->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                    <a href="{{ route('product.edit', $row->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                                     <button class="btn btn-danger btn-sm">Hapus</button>
                                                 </form>
                                             </td>
