@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Ecommerce\FrontController;
+use App\Http\Controllers\Ecommerce\CartController;
 use App\Imports\ProductImport;
 
 Route::get('/login', [LoginController::class, 'loginForm'])->name('customer.login');
@@ -15,6 +16,9 @@ Route::get('/', [FrontController::class, 'index'])->name('front.index');
 Route::get('/product', [FrontController::class, 'product'])->name('front.product');
 Route::get('/category/{slug}', [FrontController::class, 'categoryProduct'])->name('front.category');
 Route::get('/product/{slug}', [FrontController::class, 'show'])->name('front.show_product');
+Route::post('/cart', [CartController::class, 'addToCart'])->name('front.cart');
+Route::get('/cart', [CartController::class, 'listCart'])->name('front.list_cart');
+Route::post('/cart/update', [CartController::class, 'updateCart'])->name('front.update_cart');
 
 
 
