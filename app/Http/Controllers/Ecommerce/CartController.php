@@ -13,6 +13,9 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use DB;
 use Str;
+use App\Mail\CustomerRegisterMail;
+use Mail;
+use Auth;
 
 class CartController extends Controller
 {
@@ -131,7 +134,8 @@ class CartController extends Controller
             'customer_address' => 'required|string',
             'province_id' => 'required|exists:provinces,id',
             'city_id' => 'required|exists:cities,id',
-            'district_id' => 'required|exists:districts,id'
+            'district_id' => 'required|exists:districts,id',
+            'activate_token' => Str::random(30),
         ]);
 
         //INISIASI DATABASE TRANSACTION
@@ -141,7 +145,7 @@ class CartController extends Controller
             //CHECK DATA CUSTOMER BERDASARKAN EMAIL
             $customer = Customer::where('email', $request->email)->first();
             //JIKA DIA TIDAK LOGIN DAN DATA CUSTOMERNYA ADA
-            if (!auth()->check() && $customer) {
+            if (!Auth::check() && $customer) {
                 //MAKA REDIRECT DAN TAMPILKAN INSTRUKSI UNTUK LOGIN
                 return redirect()->back()->with(['error' => 'Silahkan Login Terlebih Dahulu']);
             }
@@ -154,14 +158,19 @@ class CartController extends Controller
             });
 
             //SIMPAN DATA CUSTOMER BARU
-            $customer = Customer::create([
-                'name' => $request->customer_name,
-                'email' => $request->email,
-                'phone_number' => $request->customer_phone,
-                'address' => $request->customer_address,
-                'district_id' => $request->district_id,
-                'status' => false
-            ]);
+            if (!Auth::guard('customer')->check()) {
+                $password = Str::random(8);
+                $customer = Customer::create([
+                    'name' => $request->customer_name,
+                    'email' => $request->email,
+                    'password' => $request->password,
+                    'phone_number' => $request->customer_phone,
+                    'address' => $request->customer_address,
+                    'district_id' => $request->district_id,
+                    'activate_token' => Str::random(30),
+                    'status' => false
+                ]);
+            }
 
             //SIMPAN DATA ORDER
             $order = Order::create([
@@ -194,6 +203,7 @@ class CartController extends Controller
             $carts = [];
             //KOSONGKAN DATA KERANJANG DI COOKIE
             $cookie = cookie('dw-carts', json_encode($carts), 2880);
+            Mail::to($request->email)->send(new CustomerRegisterMail($customer, $password));
             //REDIRECT KE HALAMAN FINISH TRANSAKSI
             return redirect(route('front.finish_checkout', $order->invoice))->cookie($cookie);
         } catch (\Exception $e) {

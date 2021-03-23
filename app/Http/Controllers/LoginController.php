@@ -15,14 +15,17 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $this->validate($request, [
-            'email' => 'required|email',
+            'email' => 'required|email|exists:customers,email',
             'password' => 'required|string'
         ]);
 
+        //CUKUP MENGAMBIL EMAIL DAN PASSWORD SAJA DARI REQUEST
+        //KARENA JUGA DISERTAKAN TOKEN
         $auth = $request->only('email', 'password');
-        
-        if (Auth::attempt($auth)) {
-            return redirect()->intended(route('home'));
+        $auth['status'] = 1; //TAMBAHKAN JUGA STATUS YANG BISA LOGIN HARUS 1
+
+        if (Auth::guard('customer')->attempt($auth)) {
+            return redirect()->intended(route('customer.dashboard'));
         }
 
         return redirect()->back()->with(['error' => 'Email / Password Salah']);

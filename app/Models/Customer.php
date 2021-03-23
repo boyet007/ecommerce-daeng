@@ -10,4 +10,8 @@ class Customer extends Model
     use HasFactory;
     protected $guarded = [];
 
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
 }

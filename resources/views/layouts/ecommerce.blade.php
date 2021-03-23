@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="icon" href="img/favicon.png" type="image/png">
 
-    @yield('title')
+	@yield('title')
 
 	<link rel="stylesheet" href="{{ asset('ecommerce/css/bootstrap.css') }}">
 	<link rel="stylesheet" href="{{ asset('ecommerce/vendors/linericon/style.css') }}">
@@ -31,7 +31,11 @@
 				</div>
 				<div class="float-right">
 					<ul class="right_side">
-						<li><a href="login.html">Login/Register</a></li>
+						@if (auth()->guard('customer')->check())
+						<li><a href="{{ route('customer.logout') }}">Logout</a></li>
+						@else
+						<li><a href="{{ route('customer.login') }}">Login</a></li>
+						@endif
 						<li><a href="#">My Account</a></li>
 						<li><a href="contact.html">Contact Us</a></li>
 					</ul>
@@ -42,11 +46,10 @@
 			<nav class="navbar navbar-expand-lg navbar-light">
 				<div class="container-fluid">
 					<!-- Brand and toggle get grouped for better mobile display -->
-                    <a class="navbar-brand logo_h" href="{{ url('/') }}">
+					<a class="navbar-brand logo_h" href="{{ url('/') }}">
 						<img src="https://daengweb.id/front/dw-theme/images/logo-head.png" alt="">
 					</a>
-					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-					 aria-expanded="false" aria-label="Toggle navigation">
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
@@ -80,7 +83,7 @@
 									</li>
 									<hr>
 									<li class="nav-item">
-									    <a href="{{ route('front.list_cart') }}" class="icons">
+										<a href="{{ route('front.list_cart') }}" class="icons">
 											<i class="lnr lnr lnr-cart"></i>
 										</a>
 									</li>
@@ -95,38 +98,36 @@
 	</header>
 	<!--================Header Menu Area =================-->
 
-    @yield('content')
+	@yield('content')
 
-    <!--================ Subscription Area ================-->
+	<!--================ Subscription Area ================-->
 	<section class="subscription-area section_gap">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="section-title text-center">
-                        <h2>Subscribe for Our Newsletter</h2>
-                        <span>We won’t send any kind of spam</span>
-                    </div>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <div id="mc_embed_signup">
-                        <form target="_blank" novalidate action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&id=92a4423d01"
-                            method="get" class="subscription relative">
-                            <input type="email" name="EMAIL" placeholder="Email address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email address'"
-                                required="">
-                            <!-- <div style="position: absolute; left: -5000px;">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-lg-8">
+					<div class="section-title text-center">
+						<h2>Subscribe for Our Newsletter</h2>
+						<span>We won’t send any kind of spam</span>
+					</div>
+				</div>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-lg-6">
+					<div id="mc_embed_signup">
+						<form target="_blank" novalidate action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&id=92a4423d01" method="get" class="subscription relative">
+							<input type="email" name="EMAIL" placeholder="Email address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email address'" required="">
+							<!-- <div style="position: absolute; left: -5000px;">
                                 <input type="text" name="b_36c4fd991d266f23781ded980_aefe40901a" tabindex="-1" value="">
                             </div> -->
-                            <button type="submit" class="newsl-btn">Get Started</button>
-                            <div class="info"></div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!--================ End Subscription Area ================-->
+							<button type="submit" class="newsl-btn">Get Started</button>
+							<div class="info"></div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--================ End Subscription Area ================-->
 
 	<!--================ start footer Area  =================-->
 	<footer class="footer-area section_gap">
@@ -143,11 +144,9 @@
 						<h6 class="footer_title">Newsletter</h6>
 						<p>Stay updated with our latest trends</p>
 						<div id="mc_embed_signup">
-							<form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01"
-							 method="get" class="subscribe_form relative">
+							<form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative">
 								<div class="input-group d-flex flex-row">
-									<input name="EMAIL" placeholder="Email Address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email Address '"
-									 required="" type="email">
+									<input name="EMAIL" placeholder="Email Address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email Address '" required="" type="email">
 									<button class="btn sub-btn">
 										<span class="lnr lnr-arrow-right"></span>
 									</button>
@@ -211,9 +210,11 @@
 			</div>
 			<div class="row footer-bottom d-flex justify-content-between align-items-center">
 				<p class="col-lg-12 footer-text text-center">
-                    Copyright &copy;<script>document.write(new Date().getFullYear());</script>
-                    All rights reserved | This template is made with
-                    <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://daengweb.id" target="_blank">Daengweb</a>
+					Copyright &copy;<script>
+						document.write(new Date().getFullYear());
+					</script>
+					All rights reserved | This template is made with
+					<i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://daengweb.id" target="_blank">Daengweb</a>
 				</p>
 			</div>
 		</div>
@@ -235,6 +236,7 @@
 	<script src="{{ asset('ecommerce/vendors/counter-up/jquery.counterup.js') }}"></script>
 	<script src="{{ asset('ecommerce/js/mail-script.js') }}"></script>
 	<script src="{{ asset('ecommerce/js/theme.js') }}"></script>
-    @yield('js')
+	@yield('js')
 </body>
+
 </html>

@@ -41,6 +41,20 @@ Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () 
 
 });
 
+Route::group(['prefix' => 'member'], function() {
+    Route::get('login', [LoginController::class, 'loginForm'])->name('customer.login');
+    Route::post('login', [LoginController::class, 'login'])->name('customer.post_login');
+
+    Route::group(['middleware' => 'customer'], function() {
+        Route::get('dashboard', [LoginController::class, 'dashboard'])->name('customer.dashboard');
+        Route::get('logout', 'LoginController@logout')->name('customer.logout');
+    });
+});
+
+Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
+    Route::get('verify/{token}', [FrontController::class, 'verifyCustomerRegistration'])->name('customer.verify');
+});
+
 
 Route::get('/test', function(){
     $filename = '1616393491-product.xlsx';
