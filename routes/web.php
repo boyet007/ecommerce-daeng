@@ -8,11 +8,13 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Ecommerce\FrontController;
 use App\Imports\ProductImport;
 
+Route::get('/login', [LoginController::class, 'loginForm'])->name('customer.login');
+Route::post('/login', [LoginController::class, 'login'])->name('customer.post_login');
 
 Route::get('/', [FrontController::class, 'index'])->name('front.index');
 Route::get('/product', [FrontController::class, 'product'])->name('front.product');
-Route::get('/login', [LoginController::class, 'loginForm'])->name('customer.login');
-Route::post('/login', [LoginController::class, 'login'])->name('customer.post_login');
+Route::get('/category/{slug}', [FrontController::class, 'categoryProduct'])->name('front.category');
+Route::get('/product/{slug}', [FrontController::class, 'show'])->name('front.show_product');
 
 
 
