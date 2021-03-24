@@ -163,7 +163,7 @@ class CartController extends Controller
                 $customer = Customer::create([
                     'name' => $request->customer_name,
                     'email' => $request->email,
-                    'password' => $request->password,
+                    'password' => $password,
                     'phone_number' => $request->customer_phone,
                     'address' => $request->customer_address,
                     'district_id' => $request->district_id,

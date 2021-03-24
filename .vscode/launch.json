@@ -6,7 +6,7 @@
             "type": "php",
             "request": "launch",
             "program": "",
-            "port": 9003,
+            "port": 9000,
             "pathMappings": {
                 "/home/vagrant/latihan/ecommerce-daeng": "${workspaceFolder}"
             }

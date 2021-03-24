@@ -2,15 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Ecommerce\LoginController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Ecommerce\FrontController;
 use App\Http\Controllers\Ecommerce\CartController;
 use App\Imports\ProductImport;
-
-Route::get('/login', [LoginController::class, 'loginForm'])->name('customer.login');
-Route::post('/login', [LoginController::class, 'login'])->name('customer.post_login');
 
 Route::get('/', [FrontController::class, 'index'])->name('front.index');
 Route::get('/product', [FrontController::class, 'product'])->name('front.product');
@@ -41,18 +38,15 @@ Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () 
 
 });
 
-Route::group(['prefix' => 'member'], function() {
+Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
     Route::get('login', [LoginController::class, 'loginForm'])->name('customer.login');
     Route::post('login', [LoginController::class, 'login'])->name('customer.post_login');
+    Route::get('verify/{token}', [FrontController::class, 'verifyCustomerRegistration'])->name('customer.verify');
 
     Route::group(['middleware' => 'customer'], function() {
         Route::get('dashboard', [LoginController::class, 'dashboard'])->name('customer.dashboard');
-        Route::get('logout', 'LoginController@logout')->name('customer.logout');
+        Route::get('logout', [LoginController::class, 'logout'])->name('customer.logout');
     });
-});
-
-Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
-    Route::get('verify/{token}', [FrontController::class, 'verifyCustomerRegistration'])->name('customer.verify');
 });
 
 
