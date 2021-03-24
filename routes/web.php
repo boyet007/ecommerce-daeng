@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Ecommerce\FrontController;
 use App\Http\Controllers\Ecommerce\CartController;
 use App\Imports\ProductImport;
+use App\Http\Controllers\Ecommerce\OrderController;
 
 Route::get('/', [FrontController::class, 'index'])->name('front.index');
 Route::get('/product', [FrontController::class, 'product'])->name('front.product');
@@ -39,13 +40,16 @@ Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () 
 });
 
 Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
-    Route::get('login', [LoginController::class, 'loginForm'])->name('customer.login');
-    Route::post('login', [LoginController::class, 'login'])->name('customer.post_login');
+    Route::get('/login', [LoginController::class, 'loginForm'])->name('customer.login');
+    Route::post('/login', [LoginController::class, 'login'])->name('customer.post_login');
     Route::get('verify/{token}', [FrontController::class, 'verifyCustomerRegistration'])->name('customer.verify');
 
     Route::group(['middleware' => 'customer'], function() {
-        Route::get('dashboard', [LoginController::class, 'dashboard'])->name('customer.dashboard');
-        Route::get('logout', [LoginController::class, 'logout'])->name('customer.logout');
+        Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('customer.dashboard');
+        Route::get('/logout', [LoginController::class, 'logout'])->name('customer.logout');
+        Route::get('/orders', [OrderController::class, 'index'])->name('customer.orders');
+        Route::get('/orders/{invoice}', [OrderController::class, 'view'])->name('customer.view_order');
+        Route::post('/payment', [OrderController::class, 'storePayment'])->name('customer.savePayment');
     });
 });
 
