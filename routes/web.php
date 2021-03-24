@@ -34,9 +34,6 @@ Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () 
     Route::resource('product', ProductController::class)->except(['show']);
     Route::get('/product/bulk', [ProductController::class, 'massUploadForm'])->name('product.bulk');
     Route::post('/product/bulk', [ProductController::class, 'massUpload'])->name('product.saveBulk');
-
-
-
 });
 
 Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
@@ -50,6 +47,8 @@ Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
         Route::get('/orders', [OrderController::class, 'index'])->name('customer.orders');
         Route::get('/orders/{invoice}', [OrderController::class, 'view'])->name('customer.view_order');
         Route::post('/payment', [OrderController::class, 'storePayment'])->name('customer.savePayment');
+        Route::get('/setting', [FrontController::class, 'customerSettingForm'])->name('customer.settingForm');
+        Route::post('/setting', [FrontController::class, 'customerUpdateProfile'])->name('customer.setting');
     });
 });
 

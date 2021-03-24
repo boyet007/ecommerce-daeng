@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Payment;
 use Carbon\Carbon;
+use Gate;
 use DB;
+use Auth;
 
 class OrderController extends Controller
 {
@@ -21,7 +23,16 @@ class OrderController extends Controller
     {
         $order = Order::with(['district.city.province', 'details', 'details.product', 'payment'])
             ->where('invoice', $invoice)->first();
-        return view('ecommerce.orders.view', compact('order'));
+
+        //JADI KITA CEK, VALUE forUser() NYA ADALAH CUSTOMER YANG SEDANG LOGIN
+        //DAN ALLOW NYA MEMINTA DUA PARAMETER
+        //PERTAMA ADALAH NAMA GATE YANG DIBUAT SEBELUMNYA DAN YANG KEDUA ADALAH DATA ORDER DARI QUERY DI ATAS
+        if (Gate::forUser(Auth::guard('customer')->user())->allows('order-view', $order)) {
+            //JIKA HASILNYA TRUE, MAKA KITA TAMPILKAN DATANYA
+            return view('ecommerce.orders.view', compact('order'));
+        }
+        //JIKA FALSE, MAKA REDIRECT KE HALAMAN YANG DIINGINKAN
+        return redirect(route('customer.orders'))->with(['error' => 'Anda Tidak Diizinkan Untuk Mengakses Order Orang Lain']);
     }
 
     public function paymentForm()
