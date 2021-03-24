@@ -108,4 +108,16 @@ class OrderController extends Controller
         //KEMUDIAN BUKA FILE PDFNYA DI BROWSER
         return $pdf->stream();
     }
+
+    public function acceptPayment($invoice)
+    {
+        //MENGAMBIL DATA CUSTOMER BERDASARKAN INVOICE
+        $order = Order::with(['payment'])->where('invoice', $invoice)->first();
+        //UBAH STATUS DI TABLE PAYMENTS MELALUI ORDER YANG TERKAIT
+        $order->payment()->update(['status' => 1]);
+        //UBAH STATUS ORDER MENJADI PROSES
+        $order->update(['status' => 2]);
+        //REDIRECT KE HALAMAN YANG SAMA.
+        return redirect(route('orders.view', $order->invoice));
+    }
 }

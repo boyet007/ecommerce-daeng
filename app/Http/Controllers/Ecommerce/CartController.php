@@ -157,7 +157,8 @@ class CartController extends Controller
                 return $q['qty'] * $q['product_price'];
             });
 
-            //SIMPAN DATA CUSTOMER BARU
+               //UNTUK MENGHINDARI DUPLICATE CUSTOMER, MASUKKAN QUERY UNTUK MENAMBAHKAN CUSTOMER BARU
+            //SEBENARNYA VALIDASINYA BISA DIMASUKKAN PADA METHOD VALIDATION DIATAS, TAPI TIDAK MENGAPA UNTUK MENCOBA CARA BERBEDA
             if (!Auth::guard('customer')->check()) {
                 $password = Str::random(8);
                 $customer = Customer::create([
@@ -203,7 +204,12 @@ class CartController extends Controller
             $carts = [];
             //KOSONGKAN DATA KERANJANG DI COOKIE
             $cookie = cookie('dw-carts', json_encode($carts), 2880);
-            Mail::to($request->email)->send(new CustomerRegisterMail($customer, $password));
+
+            //EMAILNYA JUGA UNTUK CUSTOMER BARU
+            if (!auth()->guard('customer')->check()) {
+                Mail::to($request->email)->send(new CustomerRegisterMail($customer, $password));
+            }
+
             //REDIRECT KE HALAMAN FINISH TRANSAKSI
             return redirect(route('front.finish_checkout', $order->invoice))->cookie($cookie);
         } catch (\Exception $e) {
