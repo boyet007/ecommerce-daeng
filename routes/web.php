@@ -64,8 +64,8 @@ Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
         Route::post('/setting', [FrontController::class, 'customerUpdateProfile'])->name('customer.setting');
         Route::get('/orders/pdf/{invoice}', [OrderController::class, 'pdf'])->name('customer.order_pdf');
         Route::post('orders/accept', [OrderController::class, 'acceptOrder'])->name('customer.order_accept');
-        Route::get('/return/{invoice}', [OrderController2::class, 'returnForm'])->name('customer.order_return');
-        Route::put('/return/{invoice}', [OrderController2::class, 'processReturn'])->name('customer.return');
+        Route::get('/return/{invoice}', [OrderController::class, 'returnForm'])->name('customer.order_return');
+        Route::put('/return/{invoice}', [OrderController::class, 'processReturn'])->name('customer.return');
     });
 });
 
