@@ -22,6 +22,7 @@ Route::get('/checkout', [CartController::class, 'checkout'])->name('front.checko
 Route::post('/checkout', [CartController::class, 'processCheckout'])->name('front.store_checkout');
 Route::get('/checkout/{invoice}', [CartController::class, 'checkoutFinish'])->name('front.finish_checkout');
 
+Auth::routes();
 
 // Auth::routes();
 //ROUTING INI MENCAKUP SEMUA ROUTING YANG BERKAITAN DENGAN AUTHENTICATION
@@ -29,12 +30,22 @@ Route::get('/checkout/{invoice}', [CartController::class, 'checkoutFinish'])->na
 //SECARA OTOMATIS AKAN DIAWALI DENGAN administrator
 //CONTOH: /administrator/category ATAU /administrator/product, DAN SEBAGAINYA
 Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () {
+    Route::get('/test', function() {
+        echo('test administrator'); });
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/logout', [LoginController::class, 'logout'])->name('customer.logout');
     Route::resource('category', CategoryController::class)->except(['create', 'show']);
     Route::resource('product', ProductController::class)->except(['show']);
     Route::get('/product/bulk', [ProductController::class, 'massUploadForm'])->name('product.bulk');
     Route::post('/product/bulk', [ProductController::class, 'massUpload'])->name('product.saveBulk');
+
+    Route::group(['prefix' => 'orders'], function() {
+        Route::get('/', [OrderController2::class, 'index'])->name('orders.index');
+        Route::delete('/{id}', [OrderController2::class, 'destroy'])->name('orders.destroy');
+        Route::get('/{invoice}', [OrderController2::class, 'view'])->name('orders.view');
+        Route::get('/payment/{invoice}', [OrderController2::class, 'acceptPayment'])->name('orders.approve_payment');
+        Route::post('/shipping', [OrderController2::class, 'shippingOrder'])->name('orders.shipping');
+    });
 });
 
 Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
@@ -52,17 +63,13 @@ Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
         Route::get('/setting', [FrontController::class, 'customerSettingForm'])->name('customer.settingForm');
         Route::post('/setting', [FrontController::class, 'customerUpdateProfile'])->name('customer.setting');
         Route::get('/orders/pdf/{invoice}', [OrderController::class, 'pdf'])->name('customer.order_pdf');
+        Route::post('orders/accept', [OrderController::class, 'acceptOrder'])->name('customer.order_accept');
+        Route::get('/return/{invoice}', [OrderController2::class, 'returnForm'])->name('customer.order_return');
+        Route::put('/return/{invoice}', [OrderController2::class, 'processReturn'])->name('customer.return');
     });
 });
 
-Route::group(['prefix' => 'orders'], function() {
-    Route::get('/', [OrderController2::class, 'index'])->name('orders.index');
-    Route::delete('/{id}', [OrderController2::class, 'destroy'])->name('orders.destroy');
-    Route::get('/{invoice}', [OrderController2::class, 'view'])->name('orders.view');
-    Route::get('/payment/{invoice}', [OrderController2::class, 'acceptPayment'])->name('orders.approve_payment');
-    Route::post('/shipping', [OrderController2::class, 'shippingOrder'])->name('orders.shipping');
 
-});
 
 
 Route::get('/test', function(){
