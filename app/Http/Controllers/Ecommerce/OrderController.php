@@ -167,8 +167,46 @@ class OrderController extends Controller
                 'refund_transfer' => $request->refund_transfer,
                 'status' => 0
             ]);
+
+            $order = Order::find($id); //AMBIL DATA ORDER BERDASARKAN ID
+            //KIRIM PESAN MELALUI BOT
+            $this->sendMessage('#' . $order->invoice, $request->reason);
+            //CODE BARU HANYA PADA BAGIAN INI SAJA
             //LALU TAMPILKAN NOTIFIKASI SUKSES
+
             return redirect()->back()->with(['success' => 'Permintaan Refund Dikirim']);
+        }
+    }
+
+    //REUSABLE CURL AGAR TIDAK MENULISKAN CODE YANG SAMA BERULANG KALI
+    private function getTelegram($url, $params)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url . $params);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+        $content = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($content, true);
+    }
+
+    private function sendMessage($order_id, $reason)
+    {
+        $key = env('TELEGRAM_KEY'); //AMBIL TOKEN DARI ENV
+        //KEMUDIAN KIRIM REQUEST KE TELEGRAM UNTUK MENGAMBIL DATA USER YANG ME-LISTEN BOT KITA
+        $chat = $this->getTelegram('https://api.telegram.org/' . $key . '/getUpdates', '');
+        //JIKA ADA
+        if ($chat['ok']) {
+            //SAYA BERASUMSI PESAN INI HANYA DIKIRIM KE ADMIN, MAKA KITA TIDAK PERLU MELOOPING HASIL DARI GET DATA USER
+            //CUKUP MENGAMBIL KEY 0 SAJA ATAU LIST YANG PERTAMA
+            //UNTUK MENDAPATKAN CHAT_ID
+            $chat_id = $chat['result'][0]['message']['chat']['id'];
+            //TEKS YANG DIINGINKAN
+            $text = 'Hai DaengWeb, OrderID ' . $order_id . ' Melakukan Permintaan Refund Dengan Alasan "' . $reason . '", Segera Dicek Ya!';
+
+            //DAN KIRIM REQUEST KE TELEGRAM UNTUK MENGIRIMKAN PESAN
+            return $this->getTelegram('https://api.telegram.org/' . $key . '/sendMessage', '?chat_id=' . $chat_id . '&text=' . $text);
         }
     }
 }

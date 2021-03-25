@@ -145,7 +145,7 @@ class CartController extends Controller
             //CHECK DATA CUSTOMER BERDASARKAN EMAIL
             $customer = Customer::where('email', $request->email)->first();
             //JIKA DIA TIDAK LOGIN DAN DATA CUSTOMERNYA ADA
-            if (!Auth::check() && $customer) {
+            if (!Auth::guard('customer') && $customer) {
                 //MAKA REDIRECT DAN TAMPILKAN INSTRUKSI UNTUK LOGIN
                 return redirect()->back()->with(['error' => 'Silahkan Login Terlebih Dahulu']);
             }

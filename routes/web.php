@@ -30,8 +30,6 @@ Auth::routes();
 //SECARA OTOMATIS AKAN DIAWALI DENGAN administrator
 //CONTOH: /administrator/category ATAU /administrator/product, DAN SEBAGAINYA
 Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () {
-    Route::get('/test', function() {
-        echo('test administrator'); });
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/logout', [LoginController::class, 'logout'])->name('customer.logout');
     Route::resource('category', CategoryController::class)->except(['create', 'show']);
@@ -45,6 +43,8 @@ Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () 
         Route::get('/{invoice}', [OrderController2::class, 'view'])->name('orders.view');
         Route::get('/payment/{invoice}', [OrderController2::class, 'acceptPayment'])->name('orders.approve_payment');
         Route::post('/shipping', [OrderController2::class, 'shippingOrder'])->name('orders.shipping');
+        Route::get('/return/{invoice}', [OrderController2::class, 'return'])->name('orders.return');
+        Route::post('/return', [OrderController2::class, 'approveReturn'])->name('orders.approve_return');
     });
 });
 
