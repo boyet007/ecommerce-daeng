@@ -37,7 +37,14 @@ Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () 
     Route::get('/product/bulk', [ProductController::class, 'massUploadForm'])->name('product.bulk');
     Route::post('/product/bulk', [ProductController::class, 'massUpload'])->name('product.saveBulk');
 
-    Route::group(['prefix' => 'orders'], function() {
+    Route::group(['prefix' => 'reports'], function () {
+        Route::get('/order', [HomeController::class, 'orderReport'])->name('report.order');
+        Route::get('/order/pdf/{daterange}', [HomeController::class, 'orderReportPdf'])->name('report.order_pdf');
+        Route::get('/return', [HomeController::class, 'returnReport'])->name('report.return');
+        Route::get('/return/pdf/{daterange}', [HomeController::class, 'returnReportPdf'])->name('report.return_pdf');
+    });
+
+    Route::group(['prefix' => 'orders'], function () {
         Route::get('/', [OrderController2::class, 'index'])->name('orders.index');
         Route::delete('/{id}', [OrderController2::class, 'destroy'])->name('orders.destroy');
         Route::get('/{invoice}', [OrderController2::class, 'view'])->name('orders.view');
@@ -48,12 +55,12 @@ Route::group(['prefix' => 'administrator', 'middleware' => 'auth'], function () 
     });
 });
 
-Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
+Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function () {
     Route::get('/login', [LoginController::class, 'loginForm'])->name('customer.login');
     Route::post('/login', [LoginController::class, 'login'])->name('customer.post_login');
     Route::get('/verify/{token}', [FrontController::class, 'verifyCustomerRegistration'])->name('customer.verify');
 
-    Route::group(['middleware' => 'customer'], function() {
+    Route::group(['middleware' => 'customer'], function () {
         Route::get('/dashboard', [LoginController::class, 'dashboard'])->name('customer.dashboard');
         Route::get('/logout', [LoginController::class, 'logout'])->name('customer.logout');
         Route::get('/orders', [OrderController::class, 'index'])->name('customer.orders');
@@ -72,7 +79,7 @@ Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function() {
 
 
 
-Route::get('/test', function(){
+Route::get('/test', function () {
     $filename = '1616393491-product.xlsx';
     file_put_contents(storage_path('app/public/products') . '/' . $filename, file_get_contents($row[4]));
     $files = (new ProductImport)->toArray(storage_path('app/public/uploads/' . $this->filename));
