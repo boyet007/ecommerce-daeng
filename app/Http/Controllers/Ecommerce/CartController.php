@@ -17,6 +17,7 @@ use App\Mail\CustomerRegisterMail;
 use Mail;
 use Auth;
 use Cookie;
+use GuzzleHttp\Client;
 
 class CartController extends Controller
 {
@@ -44,7 +45,8 @@ class CartController extends Controller
                 'product_id' => $product->id,
                 'product_name' => $product->name,
                 'product_price' => $product->price,
-                'product_image' => $product->image
+                'product_image' => $product->image,
+                'weight' => $product->weight
             ];
         }
 
@@ -105,8 +107,12 @@ class CartController extends Controller
         $subtotal = collect($carts)->sum(function ($q) {
             return $q['qty'] * $q['product_price'];
         });
+        //FUNGSI UNTUK MENGHITUNG BERAT BARANG
+        $weight = collect($carts)->sum(function ($q) {
+            return $q['qty'] * $q['weight'];
+        });
         //ME-LOAD VIEW CHECKOUT.BLADE.PHP DAN PASSING DATA PROVINCES, CARTS DAN SUBTOTAL
-        return view('ecommerce.checkout', compact('provinces', 'carts', 'subtotal'));
+        return view('ecommerce.checkout', compact('provinces', 'carts', 'subtotal', 'weight'));
     }
 
     public function getCity()
@@ -136,6 +142,7 @@ class CartController extends Controller
             'province_id' => 'required|exists:provinces,id',
             'city_id' => 'required|exists:cities,id',
             'district_id' => 'required|exists:districts,id',
+            'courier' => 'required',
             'activate_token' => Str::random(30),
         ]);
 
@@ -181,6 +188,8 @@ class CartController extends Controller
                 ]);
             }
 
+            $shipping = explode('-', $request->courier); //EXPLODE DATA KURIR, KARENA FORMATNYA, NAMAKURIR-SERVICE-COST
+
             //SIMPAN DATA ORDER
             $order = Order::create([
                 'invoice' => Str::random(4) . '-' . time(), //INVOICENYA KITA BUAT DARI STRING RANDOM DAN WAKTU
@@ -190,7 +199,9 @@ class CartController extends Controller
                 'customer_address' => $request->customer_address,
                 'district_id' => $request->district_id,
                 'subtotal' => $subtotal,
-                'ref' => $affiliate != '' && $explodeAffiliate[0] != auth()->guard('customer')->user()->id ? $affiliate:NULL
+                'cost' => $shipping[2], //SIMPAN INFORMASI BIAYA ONGKIRNYA PADA INDEX 2
+                'shipping' => $shipping[0] . '-' . $shipping[1], //SIMPAN NAMA KURIR DAN SERVICE YANG DIGUNAKAN
+                'ref' => $affiliate != '' && $explodeAffiliate[0] != auth()->guard('customer')->user()->id ? $affiliate : NULL
                 //CODE DIATAS MELAKUKAN PENGECEKAN JIKA USERID NYA BUKAN DIRINYA SENDIRI, MAKA AFILIASINYA DISIMPAN
             ]);
 
@@ -237,5 +248,33 @@ class CartController extends Controller
         $order = Order::with(['district.city'])->where('invoice', $invoice)->first();
         //LOAD VIEW checkout_finish.blade.php DAN PASSING DATA ORDER
         return view('ecommerce.checkout_finish', compact('order'));
+    }
+
+
+    public function getCourier(Request $request)
+    {
+        $this->validate($request, [
+            'destination' => 'required',
+            'weight' => 'required|integer'
+        ]);
+
+        //MENGIRIM PERMINTAAN KE API RUANGAPI UNTUK MENGAMBIL DATA ONGKOS KIRIM
+        //BACA DOKUMENTASI UNTUK PENJELASAN LEBIH LANJUT
+        $url = 'https://ruangapi.com/api/v1/shipping';
+        $client = new Client();
+        $response = $client->request('POST', $url, [
+            'headers' => [
+                'Authorization' => 'KYMBwbXXXrG0kTpjul1I5Dc9v9Ul2rHXzgVE1rZZ'
+            ],
+            'form_params' => [
+                'origin' => 22, //ASAL PENGIRIMAN, 22 = BANDUNG
+                'destination' => $request->destination,
+                'weight' => $request->weight,
+                'courier' => 'jne,jnt' //MASUKKAN KEY KURIR LAINNYA JIKA INGIN MENDAPATKAN DATA ONGKIR DARI KURIR YANG LAIN
+            ]
+        ]);
+
+        $body = json_decode($response->getBody(), true);
+        return $body;
     }
 }

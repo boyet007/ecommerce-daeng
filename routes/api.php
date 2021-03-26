@@ -7,3 +7,4 @@ use App\Http\Controllers\Ecommerce\CartController;
 
 Route::get('city', [CartController::class, 'getCity']);
 Route::get('district', [CartController::class, 'getDistrict']);
+Route::post('cost', [CartController::class, 'getCourier']);
