@@ -73,8 +73,11 @@ Route::group(['prefix' => 'member', 'namespace' => 'Ecommerce'], function () {
         Route::post('orders/accept', [OrderController::class, 'acceptOrder'])->name('customer.order_accept');
         Route::get('/return/{invoice}', [OrderController::class, 'returnForm'])->name('customer.order_return');
         Route::put('/return/{invoice}', [OrderController::class, 'processReturn'])->name('customer.return');
+        Route::get('/afiliasi', [FrontController::class, 'listCommission'])->name('customer.affiliate');
     });
 });
+
+Route::get('/product/ref/{user}/{product}', [FrontController::class, '@referalProduct'])->name('front.afiliasi');
 
 
 

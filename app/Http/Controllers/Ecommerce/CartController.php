@@ -16,6 +16,7 @@ use Str;
 use App\Mail\CustomerRegisterMail;
 use Mail;
 use Auth;
+use Cookie;
 
 class CartController extends Controller
 {
@@ -142,6 +143,13 @@ class CartController extends Controller
         //DATABASE TRANSACTION BERFUNGSI UNTUK MEMASTIKAN SEMUA PROSES SUKSES UNTUK KEMUDIAN DI COMMIT AGAR DATA BENAR BENAR DISIMPAN, JIKA TERJADI ERROR MAKA KITA ROLLBACK AGAR DATANYA SELARAS
         DB::beginTransaction();
         try {
+
+            //TAMBAHKAN DUA BARI CODE INI
+            //GET COOKIE DARI BROWSER
+            $affiliate = json_decode(request()->cookie('dw-afiliasi'), true);
+            //EXPLODE DATA COOKIE UNTUK MEMISAHKAN USERID DAN PRODUCTID
+            $explodeAffiliate = explode('-', $affiliate);
+
             //CHECK DATA CUSTOMER BERDASARKAN EMAIL
             $customer = Customer::where('email', $request->email)->first();
             //JIKA DIA TIDAK LOGIN DAN DATA CUSTOMERNYA ADA
@@ -157,7 +165,7 @@ class CartController extends Controller
                 return $q['qty'] * $q['product_price'];
             });
 
-               //UNTUK MENGHINDARI DUPLICATE CUSTOMER, MASUKKAN QUERY UNTUK MENAMBAHKAN CUSTOMER BARU
+            //UNTUK MENGHINDARI DUPLICATE CUSTOMER, MASUKKAN QUERY UNTUK MENAMBAHKAN CUSTOMER BARU
             //SEBENARNYA VALIDASINYA BISA DIMASUKKAN PADA METHOD VALIDATION DIATAS, TAPI TIDAK MENGAPA UNTUK MENCOBA CARA BERBEDA
             if (!Auth::guard('customer')->check()) {
                 $password = Str::random(8);
@@ -181,8 +189,11 @@ class CartController extends Controller
                 'customer_phone' => $request->customer_phone,
                 'customer_address' => $request->customer_address,
                 'district_id' => $request->district_id,
-                'subtotal' => $subtotal
+                'subtotal' => $subtotal,
+                'ref' => $affiliate != '' && $explodeAffiliate[0] != auth()->guard('customer')->user()->id ? $affiliate:NULL
+                //CODE DIATAS MELAKUKAN PENGECEKAN JIKA USERID NYA BUKAN DIRINYA SENDIRI, MAKA AFILIASINYA DISIMPAN
             ]);
+
 
             //LOOPING DATA DI CARTS
             foreach ($carts as $row) {
